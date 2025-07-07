@@ -9,11 +9,14 @@ from datetime import datetime, date, time
 from PIL import Image
 import io
 import base64
+from google.oauth2 import service_account
+import json
 
 # === FIREBASE INITIALIZATION ===
 if not firebase_admin._apps:
-    cred = credentials.Certificate("serviceAccountKey.json")
-    firebase_admin.initialize_app(cred)
+    firebase_creds = credentials.Certificate(st.secrets["firebase"])
+    firebase_admin.initialize_app(firebase_creds)
+
 db = firestore.client()
 
 # === LOGO & TITLE ===
