@@ -24,7 +24,7 @@ if not firebase_admin._apps:
     # Initialize Firebase Admin
     cred = credentials.Certificate(firebase_creds)
     firebase_admin.initialize_app(cred)
-
+db = firestore.client()
 # === LOGO & TITLE ===
 def get_base64_of_image(path):
     with open(path, "rb") as image_file:
