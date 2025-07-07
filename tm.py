@@ -167,18 +167,36 @@ else:
 
     page = st.selectbox("Navigate", nav_pages, key="page_select")
     if page == "Your Tasks":
+        st.subheader("Your Tasks")
+        st.divider()
         user_tasks = sorted(get_user_tasks(user["username"]), key=lambda x: x.get("due_datetime", ""))
+
         for task in user_tasks:
             due_dt = datetime.fromisoformat(task.get("due_datetime")) if task.get("due_datetime") else None
             overdue = due_dt and due_dt < datetime.now()
             overdue_label = "⚠️ Overdue" if overdue and task.get("status") != "complete" else ""
-            st.write(f"{task['title']}: {task['description']} (Due: {task.get('due_datetime', 'N/A')}) {overdue_label}")
+
+            # Format date as MM/DD/YYYY and time as HH:MM AM/PM
+            due_str = due_dt.strftime("%m/%d/%Y at %I:%M %p") if due_dt else "N/A"
+
+            # Highlight task title
+            st.markdown(f"""
+                <div style='margin-bottom: 10px; padding: 10px; border-radius: 8px; background-color: #262730;'>
+                    <strong style='font-size: 16px;'>{task['title']}</strong><br>
+                    <em>{task['description']}</em><br>
+                    <small>Due: {due_str} {overdue_label}</small><br>
+                    <small>Status: {task.get('status', 'not started').capitalize()}</small>
+                </div>
+            """, unsafe_allow_html=True)
+
+            # Status update
             status = st.selectbox("Update status", ["not started", "in progress", "complete"],
                                   index=["not started", "in progress", "complete"].index(task.get("status", "not started")),
                                   key=task["id"])
             if st.button("Update", key=f"update_{task['id']}"):
                 update_task_status(task["id"], status)
                 st.rerun()
+
 
     elif page == "Assign a Task":
         st.subheader("Assign a New Task")
