@@ -12,18 +12,11 @@ import base64
 from google.oauth2 import service_account
 import json
 
-# Initialize Firebase only once
+# Initialize Firebase using secrets
 if not firebase_admin._apps:
-    # Convert SecretsDict to a plain dict
-    firebase_creds = {key: st.secrets["firebase"][key] for key in st.secrets["firebase"]}
-    
-    # Handle multiline private key correctly (Streamlit secrets convert it to a single-line string sometimes)
-    if "\\n" in firebase_creds["private_key"]:
-        firebase_creds["private_key"] = firebase_creds["private_key"].replace("\\n", "\n")
-
-    # Initialize Firebase Admin
-    cred = credentials.Certificate(firebase_creds)
+    cred = credentials.Certificate(dict(st.secrets["firebase"]))
     firebase_admin.initialize_app(cred)
+
 db = firestore.client()
 # === LOGO & TITLE ===
 def get_base64_of_image(path):
